@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise Analysis</title>
+</head>
+<body>
+    <h1>Exercise Analysis</h1>
+    <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+        <label for="exercise">Choose an exercise:</label>
+        <select name="exercise" id="exercise">
+            {% for exercise, subcategories in exercises.items() %}
+            <option value="{{ exercise }}">{{ exercise }}</option>
+            {% endfor %}
+        </select>
+        <label for="subcategory">Choose a subcategory:</label>
+        <select name="subcategory" id="subcategory">
+            <!-- Subcategories will be populated by JavaScript -->
+        </select>
+        <label for="age_category">Choose an age category:</label>
+        <select name="age_category" id="age_category">
+            {% for age_category in age_categories %}
+            <option value="{{ age_category }}">{{ age_category }}</option>
+            {% endfor %}
+        </select>
+        <label for="video">Upload a video:</label>
+        <input type="file" name="video" id="video">
+        <button type="submit">Upload</button>
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul>
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+    <script>
+        const exercises = {{ exercises | tojson }};
+        const subcategorySelect = document.getElementById('subcategory');
+        document.getElementById('exercise').addEventListener('change', function() {
+            const selectedExercise = this.value;
+            const subcategories = exercises[selectedExercise];
+            subcategorySelect.innerHTML = '';
+            subcategories.forEach(subcategory => {
+                const option = document.createElement('option');
+                option.value = subcategory;
+                option.textContent = subcategory;
+                subcategorySelect.appendChild(option);
+            });
+        });
+    </script>
+</body>
+</html>
